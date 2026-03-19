@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>AI Resume Intelligence - Upload</title>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4ff; min-height: 100vh; }
+  nav { background: #fff; padding: 0 60px; height: 68px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 8px rgba(0,0,0,0.08); }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #3949ab, #7c4dff); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+  .logo-text { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+  .logo-text span { color: #3949ab; }
+  .progress-bar { background: #fff; border-bottom: 1px solid #eee; padding: 18px 60px; }
+  .steps { display: flex; align-items: center; gap: 0; max-width: 900px; margin: 0 auto; }
+  .step { display: flex; align-items: center; gap: 10px; flex: 1; }
+  .step-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  .step.active .step-circle { background: linear-gradient(135deg, #3949ab, #7c4dff); color: #fff; box-shadow: 0 4px 12px rgba(57,73,171,0.4); }
+  .step.pending .step-circle { background: #e0e0e0; color: #999; }
+  .step-label { font-size: 13px; font-weight: 600; }
+  .step.active .step-label { color: #3949ab; }
+  .step.pending .step-label { color: #bbb; }
+  .step-line { flex: 1; height: 2px; background: #e0e0e0; margin: 0 8px; }
+  .main { margin: 40px auto; padding: 0 40px; display: grid; grid-template-columns: 3fr -1fr; gap: 28px; }
+  .card { background: #fff; border-radius: 24px; padding: 36px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+  .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .card-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .card h3 { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+  .card p.sub { font-size: 14px; color: #888; margin-top: 2px; }
+  .file-uploaded { background: #f0fdf4; border: 2px solid #86efac; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+  .file-thumb { width: 48px; height: 56px; background: #e8eaf6; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .file-info h5 { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+  .file-info p { font-size: 13px; color: #888; margin-top: 2px; }
+  .file-info .size { color: #3949ab; font-weight: 600; }
+  .remove-btn { margin-left: auto; background: none; border: 1px solid #fca5a5; color: #ef4444; padding: 6px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+  .input-group { margin-bottom: 20px; }
+  .input-group label { display: block; font-size: 14px; font-weight: 600; color: #444; margin-bottom: 8px; }
+  .input-group select, .input-group textarea, .input-group input { width: 100%; padding: 14px 16px; border: 1.5px solid #e0e0e0; border-radius: 12px; font-size: 14px; color: #333; background: #fafafa; outline: none; font-family: inherit; }
+  .input-group textarea { resize: vertical; min-height: 120px; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tag { background: #e8eaf6; color: #3949ab; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 20px; cursor: pointer; }
+  .tag.active { background: #3949ab; color: #fff; }
+  .sectors { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sector-chip { padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 13px; font-weight: 600; color: #555; cursor: pointer; display: flex; align-items: center; gap: 8px; background: #fafafa; }
+  .sector-chip.selected { border-color: #3949ab; background: #eef0fb; color: #3949ab; }
+  .action-row { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 14px; margin-top: 8px; }
+  .btn-back { background: #fff; border: 2px solid #e0e0e0; color: #666; padding: 14px 32px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .btn-analyze { background: linear-gradient(135deg, #3949ab, #7c4dff); color: #fff; padding: 14px 40px; border-radius: 12px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 6px 20px rgba(57,73,171,0.35); }
+  .form-row{
+  display:flex;
+  gap:20px;
+}
+
+.card{
+  flex:1;
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo"><div class="logo-icon">🤖</div><div class="logo-text">Resume<span>AI</span></div></a>
+  <!-- <div class="logo"><div class="logo-icon">🤖</div><div class="logo-text">Resume<span>AI</span></div></div> -->
+  <div style="font-size:14px;color:#888;">Step 1 of 4 — Upload &amp; Configure</div>
+</nav>
+<div class="progress-bar">
+  <div class="steps">
+    <div class="step active"><div class="step-circle">1</div><div class="step-label">Upload Resume</div></div>
+    <div class="step-line"></div>
+    <div class="step pending"><div class="step-circle">2</div><div class="step-label">Parsing</div></div>
+    <div class="step-line"></div>
+    <div class="step pending"><div class="step-circle">3</div><div class="step-label">Analysis</div></div>
+    <div class="step-line"></div>
+    <div class="step pending"><div class="step-circle">4</div><div class="step-label">Results</div></div>
+  </div>
+</div>
+<div class="main">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon" style="background:#fff3e0;">📄</div>
+      <div><h3>Upload Your Resume</h3><p class="sub">We support PDF, DOCX, and TXT formats</p></div>
+    </div>
+      <form id="analyzeForm">
+
+        <div class="form-row">
+
+          <!-- LEFT CARD -->
+          <div class="card">
+            
+            <div class="file-uploaded">
+              <div class="file-thumb">📋</div>
+
+              <div class="file-info">
+                <h5></h5>
+                <p>Uploaded successfully · <span class="size"> KB</span></p>
+              </div>
+              <a href="/">
+                <button type="button" class="remove-btn">✕ Remove</button>
+              </a>
+            </div>
+
+            <input type="hidden" name="filename" value="">
+            <input type="hidden" name="filepath" value="">
+
+            <div class="input-group">
+              <label>Experience Level</label>
+              <select name="experience_level">
+                <option value="0-2years">Entry Level (0–2 years)</option>
+                <option value="2-6years">Mid-Level (2–6 years)</option>
+                <option value="7+years">Senior (7+ years)</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Target Role (optional)</label>
+              <input type="text" name="target_role" placeholder="e.g. Senior Software Engineer">
+            </div>
+
+            <div>
+              <label>Select Field / Sector (optional)</label>
+              <div class="tag-row">
+                <label class="sector-chip"><input type="radio" name="sector" value="tech"> 💻 Technology</label>
+                <label class="sector-chip"><input type="radio" name="sector" value="finance"> 💰 Finance</label>
+                <label class="sector-chip"><input type="radio" name="sector" value="healthcare"> 🏥 Healthcare</label>
+                <label class="sector-chip"><input type="radio" name="sector" value="education">🎓 Education</label>
+                <label class="sector-chip"><input type="radio" name="sector" value="engineering">🏗️ Engineering</label>
+                <label class="sector-chip"><input type="radio" name="sector" value="legal">⚖️ Legal</label>
+                <label class="sector-chip"><input type="radio" name="sector" value="marketing">📈 Marketing</label>
+                <label class="sector-chip"><input type="radio" name="sector" value="manufacturing">🎓 🏭 Manufacturing</label>      
+              </div>
+            </div>
+
+          </div>
+
+
+          <!-- RIGHT CARD -->
+          <div class="card">
+
+            <div class="card-header">
+              <div class="card-icon">📝</div>
+              <div>
+                <h3>Job Description</h3>
+                <p class="sub">Help us match you to the right opportunities</p>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label>Paste Job Description (optional)</label>
+
+              <textarea name="job_description"
+              placeholder="Paste the job description you're targeting here..."></textarea>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="action-row">
+          <button type="button" class="btn-back">← Back</button>
+          <button type="submit" class="btn-analyze" id="analyzeBtn" >🔍 Analyze Resume →</button>
+        </div>
+
+      </form>
+    
+  </div>
+  
+  
+</div>
+
+
+<script>
+
+  document.getElementById('analyzeBtn').addEventListener('click', async () => {
+
+        // collect form data
+        const form = document.getElementById('analyzeForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+        console.log(params);
+        // open SSE connection via fetch
+        const response = await fetch('/upload/analyze-resume', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params
+        });
+
+        // read stream
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const text = decoder.decode(value);
+            const lines = text.split('\n');
+
+            for (const line of lines) {
+                if (!line.startsWith('data:')) continue;
+
+                const json = JSON.parse(line.replace('data:', '').trim());
+                console.log('SSE received:', json); // ← check this in browser console
+                updateUI(json);
+            }
+        }
+    });
+
+    function updateUI({ step, status, message, data }) {
+
+      console.log(`Step : ${step}`);
+      console.log(`status : ${status}`);
+      console.log(`message : ${message}`);
+      console.log(`data : ${data}`);
+        if (step === 'parse') {
+            const el = document.getElementById('step-parse');
+            el.textContent = status === 'complete' ? '✅ ' + message : '🔄 ' + message;
+        }
+
+        if (step === 'analyze') {
+            const el = document.getElementById('step-analyze');
+            el.textContent = status === 'complete' ? '✅ ' + message : '🔄 ' + message;
+
+            if (status === 'complete' && data) {
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            }
+        }
+    }
+
+</script>
+</body>
+</html>

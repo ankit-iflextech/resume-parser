@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>AI Resume Intelligence - Improvement</title>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4ff; min-height: 100vh; }
+  nav { background: #fff; padding: 0 60px; height: 68px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 8px rgba(0,0,0,0.08); }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #3949ab, #7c4dff); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+  .logo-text { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+  .logo-text span { color: #3949ab; }
+  .page-header { background: linear-gradient(135deg, #c62828 0%, #e53935 100%); padding: 40px 60px; color: #fff; }
+  .page-header .breadcrumb { font-size: 13px; opacity: 0.75; margin-bottom: 12px; }
+  .page-header h1 { font-size: 34px; font-weight: 800; margin-bottom: 8px; }
+  .page-header p { font-size: 16px; opacity: 0.85; }
+  .header-meta { display: flex; gap: 24px; margin-top: 20px; }
+  .meta-pill { background: rgba(255,255,255,0.15); padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+  .main { max-width: 1200px; margin: 32px auto; padding: 0 40px; display: grid; grid-template-columns: 380px 1fr; gap: 24px; }
+  .score-card { background: #fff; border-radius: 24px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+  .score-card h3 { font-size: 16px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 24px; }
+  .ats-score { text-align: center; margin-bottom: 28px; }
+  .score-ring { width: 140px; height: 140px; margin: 0 auto 16px; position: relative; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring circle { fill: none; stroke-width: 10; }
+  .score-ring .bg { stroke: #f0f0f0; }
+  .score-ring .fill { stroke: #c62828; stroke-linecap: round; stroke-dasharray: 408; stroke-dashoffset: 122; }
+  .score-num { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+  .score-num .num { font-size: 38px; font-weight: 900; color: #c62828; line-height: 1; }
+  .score-num .label { font-size: 13px; color: #888; }
+  .ats-label { font-size: 14px; font-weight: 700; color: #1a1a2e; }
+  .ats-sublabel { font-size: 13px; color: #888; margin-top: 4px; }
+  .score-breakdown { border-top: 1px solid #f0f0f0; padding-top: 20px; }
+  .score-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .score-item-label { font-size: 14px; color: #555; font-weight: 500; }
+  .score-bar { flex: 1; height: 8px; background: #f0f0f0; border-radius: 4px; margin: 0 12px; }
+  .score-bar-fill { height: 100%; border-radius: 4px; }
+  .score-item-val { font-size: 13px; font-weight: 700; color: #333; min-width: 36px; text-align: right; }
+  .right-col { display: flex; flex-direction: column; gap: 20px; }
+  .card { background: #fff; border-radius: 24px; padding: 28px 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+  .card-title { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .card-title .icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+  .card-title h3 { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+  .badge-count { background: #fce4ec; color: #c62828; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 12px; margin-left: auto; }
+  .suggestion-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid #f5f5f5; }
+  .suggestion-item:last-child { border-bottom: none; }
+  .sug-type { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
+  .sug-type.critical { background: #ef4444; }
+  .sug-type.warning { background: #f59e0b; }
+  .sug-type.tip { background: #10b981; }
+  .sug-body { flex: 1; }
+  .sug-title { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+  .sug-desc { font-size: 13px; color: #666; line-height: 1.55; }
+  .sug-action { margin-top: 8px; }
+  .sug-action button { background: none; border: 1.5px solid #e0e0e0; color: #3949ab; padding: 5px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .sug-severity { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 8px; height: fit-content; margin-top: 3px; flex-shrink: 0; }
+  .sev-critical { background: #fee2e2; color: #ef4444; }
+  .sev-warning { background: #fef3c7; color: #d97706; }
+  .sev-tip { background: #d1fae5; color: #059669; }
+  .keyword-section { margin-bottom: 16px; }
+  .keyword-section h4 { font-size: 14px; font-weight: 700; color: #555; margin-bottom: 10px; }
+  .kw-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .kw { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+  .kw.present { background: #d1fae5; color: #059669; }
+  .kw.missing { background: #fee2e2; color: #ef4444; border: 1.5px dashed #fca5a5; }
+  .kw.partial { background: #fef3c7; color: #d97706; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo"><div class="logo-icon">🤖</div><div class="logo-text">Resume<span>AI</span></div></div>
+  <div style="font-size:14px;color:#888;display:flex;gap:16px;align-items:center;"><span>Rahul_Sharma_Resume.pdf</span><button style="background:#3949ab;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Download Report</button></div>
+</nav>
+<div class="page-header">
+  <div class="breadcrumb">Dashboard → Resume Analysis → Improvement Suggestions</div>
+  <h1>✏️ Resume Improvement Suggestions</h1>
+  <p>AI-powered analysis to maximize your resume's impact and ATS compatibility</p>
+  <div class="header-meta">
+    <div class="meta-pill">📄 Rahul Sharma Resume</div>
+    <div class="meta-pill">💻 Technology Sector</div>
+    <div class="meta-pill">🎯 Senior Software Engineer</div>
+    <div class="meta-pill">⚡ 12 suggestions found</div>
+  </div>
+</div>
+<div class="main">
+  <div>
+    <div class="score-card">
+      <h3>ATS Score</h3>
+      <div class="ats-score">
+        <div class="score-ring">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <circle class="bg" cx="70" cy="70" r="65"/>
+            <circle class="fill" cx="70" cy="70" r="65"/>
+          </svg>
+          <div class="score-num"><div class="num">70</div><div class="label">/ 100</div></div>
+        </div>
+        <div class="ats-label">Needs Improvement</div>
+        <div class="ats-sublabel">Target: 85+ to pass most ATS filters</div>
+      </div>
+      <div class="score-breakdown">
+        <div class="score-item"><span class="score-item-label">Keywords</span><div class="score-bar"><div class="score-bar-fill" style="width:58%;background:#ef4444;"></div></div><span class="score-item-val" style="color:#ef4444;">58%</span></div>
+        <div class="score-item"><span class="score-item-label">Formatting</span><div class="score-bar"><div class="score-bar-fill" style="width:82%;background:#10b981;"></div></div><span class="score-item-val" style="color:#10b981;">82%</span></div>
+        <div class="score-item"><span class="score-item-label">Experience</span><div class="score-bar"><div class="score-bar-fill" style="width:75%;background:#f59e0b;"></div></div><span class="score-item-val" style="color:#f59e0b;">75%</span></div>
+        <div class="score-item"><span class="score-item-label">Education</span><div class="score-bar"><div class="score-bar-fill" style="width:90%;background:#10b981;"></div></div><span class="score-item-val" style="color:#10b981;">90%</span></div>
+        <div class="score-item"><span class="score-item-label">Skills Match</span><div class="score-bar"><div class="score-bar-fill" style="width:65%;background:#f59e0b;"></div></div><span class="score-item-val" style="color:#f59e0b;">65%</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="right-col">
+    <div class="card">
+      <div class="card-title"><div class="icon" style="background:#fce4ec;">⚠️</div><h3>Action Items</h3><div class="badge-count">12 issues</div></div>
+      <div class="suggestion-item"><div class="sug-type critical"></div><div class="sug-body"><div class="sug-title">Missing Professional Summary</div><div class="sug-desc">Your resume lacks a professional summary section. ATS systems and recruiters expect a 3–4 line summary at the top. This is critical for keyword matching.</div><div class="sug-action"><button>✏️ Generate Summary</button></div></div><div class="sug-severity sev-critical">Critical</div></div>
+      <div class="suggestion-item"><div class="sug-type critical"></div><div class="sug-body"><div class="sug-title">Add Quantified Achievements</div><div class="sug-desc">Only 2 of 8 bullet points contain measurable results. Replace vague statements with metrics: "Improved performance by 40%", "Managed team of 6 engineers".</div><div class="sug-action"><button>📊 View Examples</button></div></div><div class="sug-severity sev-critical">Critical</div></div>
+      <div class="suggestion-item"><div class="sug-type warning"></div><div class="sug-body"><div class="sug-title">Keyword Gap: Cloud Technologies</div><div class="sug-desc">Target job descriptions mention AWS, Azure, GCP frequently, but your resume only mentions AWS. Add specific cloud services you have worked with.</div><div class="sug-action"><button>🔑 Add Keywords</button></div></div><div class="sug-severity sev-warning">Important</div></div>
+      <div class="suggestion-item"><div class="sug-type warning"></div><div class="sug-body"><div class="sug-title">LinkedIn Profile URL Missing</div><div class="sug-desc">Add your LinkedIn profile URL to the contact section. 87% of recruiters verify LinkedIn before contacting candidates.</div></div><div class="sug-severity sev-warning">Important</div></div>
+      <div class="suggestion-item"><div class="sug-type tip"></div><div class="sug-body"><div class="sug-title">Use Active Voice Verbs</div><div class="sug-desc">Replace passive constructions like "was responsible for" with strong action verbs: Led, Built, Architected, Optimized, Delivered.</div></div><div class="sug-severity sev-tip">Tip</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="icon" style="background:#e8f5e9;">🔑</div><h3>Keyword Analysis</h3></div>
+      <div class="keyword-section"><h4>✅ Keywords Present in Your Resume</h4><div class="kw-grid"><span class="kw present">Python</span><span class="kw present">Machine Learning</span><span class="kw present">Data Analysis</span><span class="kw present">AWS</span><span class="kw present">REST API</span><span class="kw present">Git</span><span class="kw present">Agile</span></div></div>
+      <div class="keyword-section"><h4>❌ Missing High-Priority Keywords</h4><div class="kw-grid"><span class="kw missing">MLOps</span><span class="kw missing">Kubernetes</span><span class="kw missing">Spark</span><span class="kw missing">TensorFlow</span><span class="kw missing">CI/CD</span><span class="kw missing">System Design</span></div></div>
+      <div class="keyword-section"><h4>⚡ Partially Mentioned</h4><div class="kw-grid"><span class="kw partial">Cloud Architecture</span><span class="kw partial">Team Leadership</span><span class="kw partial">Performance Optimization</span></div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

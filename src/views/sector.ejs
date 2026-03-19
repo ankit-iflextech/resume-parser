@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>AI Resume Intelligence - Field Sector</title>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4ff; min-height: 100vh; }
+  nav { background: #fff; padding: 0 60px; height: 68px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 8px rgba(0,0,0,0.08); }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #3949ab, #7c4dff); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+  .logo-text { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+  .logo-text span { color: #3949ab; }
+  .page-header { background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%); padding: 40px 60px; color: #fff; }
+  .page-header .breadcrumb { font-size: 13px; opacity: 0.75; margin-bottom: 12px; }
+  .page-header h1 { font-size: 34px; font-weight: 800; margin-bottom: 8px; }
+  .page-header p { font-size: 16px; opacity: 0.85; }
+  .header-meta { display: flex; gap: 24px; margin-top: 20px; }
+  .meta-pill { background: rgba(255,255,255,0.15); padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+  .main { max-width: 1200px; margin: 32px auto; padding: 0 40px; }
+  .primary-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  .primary-card { background: #fff; border-radius: 24px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); text-align: center; position: relative; overflow: hidden; }
+  .primary-card.top { border: 2px solid #1565c0; }
+  .primary-card .top-badge { position: absolute; top: 16px; right: 16px; background: #1565c0; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
+  .primary-card .sector-icon { font-size: 48px; margin-bottom: 12px; }
+  .primary-card h3 { font-size: 20px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+  .primary-card .match-pct { font-size: 36px; font-weight: 900; margin: 10px 0; }
+  .primary-card .match-label { font-size: 13px; color: #888; margin-bottom: 14px; }
+  .primary-card .reason { font-size: 13px; color: #555; line-height: 1.6; background: #f8f9ff; padding: 12px 16px; border-radius: 12px; text-align: left; }
+  .conf-bar { height: 8px; background: #e0e0e0; border-radius: 4px; margin-top: 14px; }
+  .conf-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #1565c0, #42a5f5); }
+  .section-title { font-size: 22px; font-weight: 800; color: #1a1a2e; margin-bottom: 16px; }
+  .career-path-card { background: #fff; border-radius: 24px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); margin-bottom: 24px; }
+  .path-row { display: flex; align-items: center; }
+  .path-node { flex-shrink: 0; text-align: center; min-width: 110px; }
+  .path-circle { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 8px; }
+  .path-node .years { font-size: 11px; color: #aaa; margin-top: 4px; }
+  .path-node .role { font-size: 13px; font-weight: 700; color: #333; }
+  .path-node.current .role { color: #1565c0; }
+  .path-arrow { flex: 1; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 20px; }
+  .sub-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .sub-card { background: #fff; border-radius: 16px; padding: 20px 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+  .sub-card .sub-icon { font-size: 28px; margin-bottom: 10px; }
+  .sub-card h4 { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px; }
+  .sub-card .sub-match { font-size: 20px; font-weight: 800; color: #1565c0; }
+  .sub-card .sub-label { font-size: 12px; color: #888; }
+  .sub-card .sub-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
+  .sub-tag { background: #e3f2fd; color: #1565c0; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+  .trends-card { background: #fff; border-radius: 24px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+  .trend-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid #f5f5f5; }
+  .trend-row:last-child { border-bottom: none; }
+  .trend-icon { font-size: 24px; width: 44px; height: 44px; background: #e3f2fd; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .trend-body { flex: 1; }
+  .trend-title { font-size: 14px; font-weight: 700; color: #1a1a2e; }
+  .trend-desc { font-size: 13px; color: #888; margin-top: 3px; }
+  .trend-grow { font-size: 14px; font-weight: 800; color: #10b981; }
+  .trend-demand { display: flex; gap: 6px; align-items: center; }
+  .demand-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+  .demand-dot.med { background: #f59e0b; }
+  .demand-label { font-size: 12px; font-weight: 600; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo"><div class="logo-icon">🤖</div><div class="logo-text">Resume<span>AI</span></div></div>
+  <div style="display:flex;gap:12px;">
+    <button style="background:#e3f2fd;color:#1565c0;border:none;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">← Improvement</button>
+    <button style="background:#1565c0;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Job Openings →</button>
+  </div>
+</nav>
+<div class="page-header">
+  <div class="breadcrumb">Dashboard → Resume Analysis → Field Sector Identification</div>
+  <h1>🏢 Field Sector Identification</h1>
+  <p>AI has analyzed your resume and identified your best-fit industry sectors and career trajectory</p>
+  <div class="header-meta">
+    <div class="meta-pill">📊 Confidence: 94%</div>
+    <div class="meta-pill">🏆 Primary: Technology</div>
+    <div class="meta-pill">📈 Market: High Growth</div>
+  </div>
+</div>
+<div class="main">
+  <div class="section-title">🎯 Top Matching Sectors</div>
+  <div class="primary-row">
+    <div class="primary-card top">
+      <div class="top-badge">🏆 Best Match</div>
+      <div class="sector-icon">💻</div>
+      <h3>Technology</h3>
+      <div class="match-pct" style="color:#1565c0;">94%</div>
+      <div class="match-label">Compatibility Score</div>
+      <div class="reason">Strong alignment with software engineering skills: Python, ML, AWS, REST APIs. 5+ years of relevant experience matches senior tech roles.</div>
+      <div class="conf-bar"><div class="conf-fill" style="width:94%;"></div></div>
+    </div>
+    <div class="primary-card">
+      <div class="sector-icon">📊</div>
+      <h3>Data Science</h3>
+      <div class="match-pct" style="color:#7b1fa2;">78%</div>
+      <div class="match-label">Compatibility Score</div>
+      <div class="reason">Machine learning background and data analysis experience aligns well. Could benefit from adding statistics and deep learning keywords.</div>
+      <div class="conf-bar"><div class="conf-fill" style="width:78%;background:linear-gradient(90deg,#7b1fa2,#ab47bc);"></div></div>
+    </div>
+    <div class="primary-card">
+      <div class="sector-icon">☁️</div>
+      <h3>Cloud / DevOps</h3>
+      <div class="match-pct" style="color:#00838f;">62%</div>
+      <div class="match-label">Compatibility Score</div>
+      <div class="reason">AWS experience is a good foundation. Adding Kubernetes, Docker orchestration, and CI/CD would significantly boost compatibility.</div>
+      <div class="conf-bar"><div class="conf-fill" style="width:62%;background:linear-gradient(90deg,#00838f,#26c6da);"></div></div>
+    </div>
+  </div>
+  <div class="section-title">🗺️ Career Path Trajectory</div>
+  <div class="career-path-card">
+    <div class="path-row">
+      <div class="path-node"><div class="path-circle" style="background:#e8f5e9;">👨‍💻</div><div class="role">Junior Dev</div><div class="years">0–2 yrs</div></div>
+      <div class="path-arrow">→</div>
+      <div class="path-node"><div class="path-circle" style="background:#e3f2fd;">🔧</div><div class="role">Software Engineer</div><div class="years">2–4 yrs</div></div>
+      <div class="path-arrow">→</div>
+      <div class="path-node current"><div class="path-circle" style="background:#1565c0;">⭐</div><div class="role">Senior Engineer</div><div class="years">📍 You are here</div></div>
+      <div class="path-arrow">→</div>
+      <div class="path-node"><div class="path-circle" style="background:#fff8e1;">👑</div><div class="role">Tech Lead</div><div class="years">8–12 yrs</div></div>
+      <div class="path-arrow">→</div>
+      <div class="path-node"><div class="path-circle" style="background:#fce4ec;">🏆</div><div class="role">CTO / EM</div><div class="years">12+ yrs</div></div>
+    </div>
+  </div>
+  <div class="section-title">📁 Sub-sector Breakdown</div>
+  <div class="sub-grid">
+    <div class="sub-card"><div class="sub-icon">🤖</div><h4>AI / Machine Learning</h4><div class="sub-match">88%</div><div class="sub-label">match</div><div class="sub-tags"><span class="sub-tag">Python</span><span class="sub-tag">ML</span><span class="sub-tag">TensorFlow</span></div></div>
+    <div class="sub-card"><div class="sub-icon">🌐</div><h4>Backend Engineering</h4><div class="sub-match">82%</div><div class="sub-label">match</div><div class="sub-tags"><span class="sub-tag">REST API</span><span class="sub-tag">Node.js</span><span class="sub-tag">SQL</span></div></div>
+    <div class="sub-card"><div class="sub-icon">📊</div><h4>Data Engineering</h4><div class="sub-match">71%</div><div class="sub-label">match</div><div class="sub-tags"><span class="sub-tag">ETL</span><span class="sub-tag">SQL</span><span class="sub-tag">Spark</span></div></div>
+    <div class="sub-card"><div class="sub-icon">☁️</div><h4>Cloud Engineering</h4><div class="sub-match">64%</div><div class="sub-label">match</div><div class="sub-tags"><span class="sub-tag">AWS</span><span class="sub-tag">Docker</span></div></div>
+  </div>
+  <div class="section-title">📈 Industry Trends</div>
+  <div class="trends-card">
+    <div class="trend-row"><div class="trend-icon">🤖</div><div class="trend-body"><div class="trend-title">Generative AI &amp; LLMs</div><div class="trend-desc">Fastest growing skill in tech — 340% increase in job postings in 2024</div></div><div><div class="trend-grow">+340%</div><div class="trend-demand"><div class="demand-dot"></div><div class="demand-label" style="color:#10b981;">Very High</div></div></div></div>
+    <div class="trend-row"><div class="trend-icon">☁️</div><div class="trend-body"><div class="trend-title">Cloud-Native Development</div><div class="trend-desc">Kubernetes, microservices, serverless adoption accelerating</div></div><div><div class="trend-grow">+125%</div><div class="trend-demand"><div class="demand-dot"></div><div class="demand-label" style="color:#10b981;">High</div></div></div></div>
+    <div class="trend-row"><div class="trend-icon">🔐</div><div class="trend-body"><div class="trend-title">Cybersecurity Engineering</div><div class="trend-desc">Security-first development practices becoming mandatory requirement</div></div><div><div class="trend-grow">+89%</div><div class="trend-demand"><div class="demand-dot med"></div><div class="demand-label" style="color:#f59e0b;">Medium-High</div></div></div></div>
+  </div>
+</div>
+</body>
+</html>

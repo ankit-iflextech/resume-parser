@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1280" />
+    <title>AI Resume Intelligence - Home</title>
+    <script
+      src="https://mcp.figma.com/mcp/html-to-design/capture.js"
+      async
+    ></script>
+    <link rel="stylesheet" href="/assets/css/home.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="hero">
+      <div class="hero-left">
+        <div class="badge">✨ AI-Powered Career Intelligence</div>
+        <h1>Land Your <span>Dream Job</span> with AI Resume Analysis</h1>
+        <p class="hero-sub">
+          Upload your resume and let our AI parse, analyze, and match you with
+          the perfect opportunities — while improving your resume to beat ATS
+          systems.
+        </p>
+        <div class="hero-btns">
+          <button class="btn-primary">🚀 Analyze My Resume</button>
+          <button class="btn-secondary">Watch Demo</button>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-num">50K+</div>
+            <div class="stat-label">Resumes Analyzed</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">92%</div>
+            <div class="stat-label">ATS Pass Rate</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">10K+</div>
+            <div class="stat-label">Jobs Matched</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="upload-card">
+          <h3>Start Your Analysis</h3>
+          <p>Upload your resume to get started instantly</p>
+
+          <form action="/upload" method="POST" enctype="multipart/form-data">
+            <div class="drop-zone" id="dropZone">
+              <input
+                type="file"
+                id="fileInput"
+                name="resume"
+                accept=".pdf,.docx,.txt"
+                hidden
+              />
+
+              <div class="drop-icon">📄</div>
+              <h4 id="dropText">Drop your resume here</h4>
+              <p>
+                or
+                <span
+                  class="browse-link"
+                  onclick="document.getElementById('fileInput').click()"
+                  >click to browse</span
+                >
+              </p>
+
+              <div class="file-types">
+                <span class="file-type">PDF</span>
+                <span class="file-type">DOCX</span>
+                <span class="file-type">TXT</span>
+              </div>
+            </div>
+
+            <!-- Selected file name shows here -->
+            <div class="file-info" id="fileInfo" style="display: none">
+              <span class="file-name" id="fileName"></span>
+              <span class="remove-file" onclick="removeFile()">✕</span>
+            </div>
+
+            <button type="submit" class="upload-btn" id="submitBtn" disabled>
+              🔍 Analyze Resume
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="features">
+      <h2>Everything You Need</h2>
+      <p class="features-sub">
+        Powered by advanced AI to supercharge your job search
+      </p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h4>Smart Resume Parser</h4>
+          <p>
+            Extracts skills, experience, education and certifications with 98%
+            accuracy using our NLP engine.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">✏️</div>
+          <h4>Resume Improvement</h4>
+          <p>
+            Get AI-powered suggestions to optimize keywords, improve ATS score,
+            and fix formatting issues.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💼</div>
+          <h4>Job Matching</h4>
+          <p>
+            Real-time job listings matched to your skills and sector with
+            compatibility score percentages.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      const fileInfo = document.getElementById("fileInfo");
+      const fileName = document.getElementById("fileName");
+      const submitBtn = document.getElementById("submitBtn");
+      const dropText = document.getElementById("dropText");
+
+      // Click on drop zone opens file picker
+      dropZone.addEventListener("click", () => fileInput.click());
+
+      // File selected via input
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) showFile(fileInput.files[0]);
+      });
+
+      // Drag over
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+
+      // Drag leave
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("dragover");
+      });
+
+      // Drop file
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          fileInput.files = e.dataTransfer.files; // assign to input
+          showFile(file);
+        }
+      });
+
+      // Show selected file
+      function showFile(file) {
+        fileName.textContent = file.name;
+        fileInfo.style.display = "flex";
+        submitBtn.disabled = false;
+        dropText.textContent = "File selected ✅";
+      }
+
+      // Remove file
+      function removeFile() {
+        fileInput.value = "";
+        fileInfo.style.display = "none";
+        submitBtn.disabled = true;
+        dropText.textContent = "Drop your resume here";
+      }
+    </script>
+  </body>
+</html>

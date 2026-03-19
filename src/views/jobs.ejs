@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>AI Resume Intelligence - Job Openings</title>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4ff; min-height: 100vh; }
+  nav { background: #fff; padding: 0 60px; height: 68px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 8px rgba(0,0,0,0.08); }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #3949ab, #7c4dff); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+  .logo-text { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+  .logo-text span { color: #3949ab; }
+  .page-header { background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%); padding: 40px 60px; color: #fff; }
+  .page-header .breadcrumb { font-size: 13px; opacity: 0.75; margin-bottom: 12px; }
+  .page-header h1 { font-size: 34px; font-weight: 800; margin-bottom: 8px; }
+  .page-header p { font-size: 16px; opacity: 0.85; }
+  .header-meta { display: flex; gap: 24px; margin-top: 20px; }
+  .meta-pill { background: rgba(255,255,255,0.15); padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+  .main { max-width: 1200px; margin: 32px auto; padding: 0 40px; display: grid; grid-template-columns: 300px 1fr; gap: 24px; }
+  .filters { background: #fff; border-radius: 24px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); height: fit-content; }
+  .filters h3 { font-size: 16px; font-weight: 800; color: #1a1a2e; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+  .filters h3 span { font-size: 12px; font-weight: 600; color: #3949ab; cursor: pointer; }
+  .filter-group { margin-bottom: 22px; }
+  .filter-group label { display: block; font-size: 13px; font-weight: 700; color: #555; margin-bottom: 10px; }
+  .filter-option { display: flex; align-items: center; gap: 10px; padding: 8px 0; cursor: pointer; }
+  .filter-option input[type=checkbox] { width: 16px; height: 16px; accent-color: #2e7d32; }
+  .filter-option span { font-size: 14px; color: #333; }
+  .filter-option .count { margin-left: auto; background: #e8f5e9; color: #2e7d32; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+  .salary-range { display: flex; align-items: center; gap: 8px; }
+  .salary-input { flex: 1; padding: 10px 12px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 13px; color: #333; outline: none; }
+  .apply-btn { width: 100%; background: linear-gradient(135deg, #1b5e20, #2e7d32); color: #fff; padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; margin-top: 8px; }
+  .jobs-col { display: flex; flex-direction: column; gap: 16px; }
+  .sort-bar { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 16px; padding: 14px 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+  .sort-bar .results { font-size: 15px; font-weight: 700; color: #1a1a2e; flex: 1; }
+  .sort-bar .results span { color: #2e7d32; }
+  .sort-select { border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 8px 12px; font-size: 13px; color: #333; outline: none; }
+  .job-card { background: #fff; border-radius: 20px; padding: 24px 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-left: 5px solid transparent; cursor: pointer; }
+  .job-card.top-match { border-left-color: #10b981; }
+  .job-card.good { border-left-color: #3949ab; }
+  .job-card.featured { border-left-color: #f59e0b; }
+  .job-top { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
+  .company-logo { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .job-info { flex: 1; }
+  .job-title { font-size: 18px; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; }
+  .company-name { font-size: 14px; font-weight: 600; color: #555; }
+  .job-meta { display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap; }
+  .job-meta span { font-size: 12px; color: #888; }
+  .match-badge { background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-size: 14px; font-weight: 800; padding: 8px 16px; border-radius: 12px; text-align: center; flex-shrink: 0; }
+  .match-badge .match-num { font-size: 22px; font-weight: 900; line-height: 1; }
+  .match-badge .match-lbl { font-size: 10px; opacity: 0.85; }
+  .job-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .job-tag { background: #f5f5f5; color: #555; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 8px; }
+  .job-tag.match { background: #d1fae5; color: #059669; }
+  .job-tag.missing { background: #fee2e2; color: #ef4444; }
+  .job-bottom { display: flex; align-items: center; gap: 12px; }
+  .salary { font-size: 16px; font-weight: 800; color: #1a1a2e; }
+  .job-type { background: #e3f2fd; color: #1565c0; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 8px; }
+  .posted { font-size: 12px; color: #aaa; margin-left: auto; }
+  .apply-job { background: linear-gradient(135deg, #1b5e20, #2e7d32); color: #fff; padding: 10px 24px; border-radius: 10px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; }
+  .save-job { background: none; border: 2px solid #e0e0e0; color: #888; padding: 10px 16px; border-radius: 10px; font-size: 13px; cursor: pointer; }
+  .feat-tag { background: #fef3c7; color: #d97706; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo"><div class="logo-icon">🤖</div><div class="logo-text">Resume<span>AI</span></div></div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <input type="text" placeholder="🔍  Search jobs..." style="border:1.5px solid #e0e0e0;border-radius:10px;padding:9px 16px;font-size:14px;width:260px;outline:none;">
+    <button style="background:#2e7d32;color:#fff;border:none;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;">Set Alert 🔔</button>
+  </div>
+</nav>
+<div class="page-header">
+  <div class="breadcrumb">Dashboard → Resume Analysis → Job Openings</div>
+  <h1>💼 Current Job Openings</h1>
+  <p>AI-matched opportunities based on your resume, skills, and target sector</p>
+  <div class="header-meta">
+    <div class="meta-pill">🎯 247 jobs matched</div>
+    <div class="meta-pill">💻 Technology Sector</div>
+    <div class="meta-pill">📍 Remote + India</div>
+    <div class="meta-pill">⚡ Updated: 2 hrs ago</div>
+  </div>
+</div>
+<div class="main">
+  <div class="filters">
+    <h3>Filters <span>Reset all</span></h3>
+    <div class="filter-group">
+      <label>Match Score</label>
+      <div class="filter-option"><input type="checkbox" checked><span>90%+ (Top Match)</span><div class="count">18</div></div>
+      <div class="filter-option"><input type="checkbox" checked><span>75–90% (Great)</span><div class="count">64</div></div>
+      <div class="filter-option"><input type="checkbox"><span>60–75% (Good)</span><div class="count">110</div></div>
+    </div>
+    <div class="filter-group">
+      <label>Job Type</label>
+      <div class="filter-option"><input type="checkbox" checked><span>Full-time</span><div class="count">180</div></div>
+      <div class="filter-option"><input type="checkbox" checked><span>Remote</span><div class="count">89</div></div>
+      <div class="filter-option"><input type="checkbox"><span>Contract</span><div class="count">42</div></div>
+    </div>
+    <div class="filter-group">
+      <label>Experience Level</label>
+      <div class="filter-option"><input type="checkbox" checked><span>Senior (5–9 yrs)</span><div class="count">98</div></div>
+      <div class="filter-option"><input type="checkbox"><span>Lead / Staff</span><div class="count">44</div></div>
+    </div>
+    <div class="filter-group">
+      <label>Salary Range (LPA)</label>
+      <div class="salary-range"><input class="salary-input" type="text" value="₹20L"><span>—</span><input class="salary-input" type="text" value="₹60L"></div>
+    </div>
+    <div class="filter-group">
+      <label>Top Companies</label>
+      <div class="filter-option"><input type="checkbox" checked><span>Google</span></div>
+      <div class="filter-option"><input type="checkbox" checked><span>Amazon</span></div>
+      <div class="filter-option"><input type="checkbox"><span>Microsoft</span></div>
+      <div class="filter-option"><input type="checkbox"><span>Flipkart</span></div>
+    </div>
+    <button class="apply-btn">Apply Filters</button>
+  </div>
+  <div class="jobs-col">
+    <div class="sort-bar">
+      <div class="results"><span>247 jobs</span> matched your profile</div>
+      <span style="font-size:13px;color:#888;">Sort by:</span>
+      <select class="sort-select"><option>Best Match</option><option>Most Recent</option><option>Highest Salary</option></select>
+    </div>
+    <div class="job-card top-match">
+      <div class="job-top">
+        <div class="company-logo" style="background:#e8f5e9;">🌐</div>
+        <div class="job-info"><div class="job-title">Senior Machine Learning Engineer</div><div class="company-name">Google India — Bangalore, Karnataka</div><div class="job-meta"><span>📍 Hybrid</span><span>⏱ Full-time</span><span>👥 5–9 years exp</span></div></div>
+        <div class="match-badge"><div class="match-num">95%</div><div class="match-lbl">match</div></div>
+      </div>
+      <div class="job-tags"><span class="job-tag match">Python ✓</span><span class="job-tag match">Machine Learning ✓</span><span class="job-tag match">AWS ✓</span><span class="job-tag match">Data Analysis ✓</span><span class="job-tag missing">TensorFlow ✗</span><span class="job-tag missing">MLOps ✗</span></div>
+      <div class="job-bottom"><div class="salary">₹42L – ₹68L / yr</div><div class="job-type">Full-time</div><div class="feat-tag">⭐ Featured</div><div class="posted">Posted 1 day ago</div><button class="save-job">🔖</button><button class="apply-job">Quick Apply →</button></div>
+    </div>
+    <div class="job-card top-match">
+      <div class="job-top">
+        <div class="company-logo" style="background:#fff3e0;">🛒</div>
+        <div class="job-info"><div class="job-title">Senior Data Scientist</div><div class="company-name">Amazon — Hyderabad / Remote</div><div class="job-meta"><span>📍 Remote</span><span>⏱ Full-time</span><span>👥 4–8 years exp</span></div></div>
+        <div class="match-badge"><div class="match-num">89%</div><div class="match-lbl">match</div></div>
+      </div>
+      <div class="job-tags"><span class="job-tag match">Python ✓</span><span class="job-tag match">SQL ✓</span><span class="job-tag match">ML ✓</span><span class="job-tag missing">Spark ✗</span><span class="job-tag missing">Redshift ✗</span></div>
+      <div class="job-bottom"><div class="salary">₹38L – ₹58L / yr</div><div class="job-type">Remote</div><div class="posted">Posted 3 days ago</div><button class="save-job">🔖</button><button class="apply-job">Quick Apply →</button></div>
+    </div>
+    <div class="job-card good">
+      <div class="job-top">
+        <div class="company-logo" style="background:#e8eaf6;">🏪</div>
+        <div class="job-info"><div class="job-title">Staff Software Engineer – Backend</div><div class="company-name">Flipkart — Bangalore / Hybrid</div><div class="job-meta"><span>📍 Hybrid</span><span>⏱ Full-time</span><span>👥 6–10 years exp</span></div></div>
+        <div class="match-badge" style="background:linear-gradient(135deg,#3949ab,#7c4dff);"><div class="match-num">82%</div><div class="match-lbl">match</div></div>
+      </div>
+      <div class="job-tags"><span class="job-tag match">REST API ✓</span><span class="job-tag match">Python ✓</span><span class="job-tag match">Agile ✓</span><span class="job-tag missing">Kafka ✗</span><span class="job-tag missing">Go ✗</span></div>
+      <div class="job-bottom"><div class="salary">₹45L – ₹75L / yr</div><div class="job-type">Hybrid</div><div class="posted">Posted 5 days ago</div><button class="save-job">🔖</button><button class="apply-job">Quick Apply →</button></div>
+    </div>
+    <div class="job-card featured">
+      <div class="job-top">
+        <div class="company-logo" style="background:#fff8e1;">🍕</div>
+        <div class="job-info"><div class="job-title">Senior ML Engineer – Recommendations</div><div class="company-name">Swiggy — Bangalore</div><div class="job-meta"><span>📍 On-site</span><span>⏱ Full-time</span><span>👥 4–7 years exp</span></div></div>
+        <div class="match-badge" style="background:linear-gradient(135deg,#f59e0b,#d97706);"><div class="match-num">78%</div><div class="match-lbl">match</div></div>
+      </div>
+      <div class="job-tags"><span class="job-tag match">ML ✓</span><span class="job-tag match">Python ✓</span><span class="job-tag match">Data Analysis ✓</span><span class="job-tag missing">Recommendation Systems ✗</span><span class="job-tag missing">A/B Testing ✗</span></div>
+      <div class="job-bottom"><div class="salary">₹28L – ₹45L / yr</div><div class="job-type">Full-time</div><div class="feat-tag">🔥 Hot</div><div class="posted">Posted today</div><button class="save-job">🔖</button><button class="apply-job">Quick Apply →</button></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

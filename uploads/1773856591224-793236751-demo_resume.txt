@@ -1,0 +1,46 @@
+ANKIT SHARMA
+============
+Email   : ankitsharma@email.com
+Phone   : +91 98765 43210
+Location: Delhi, India
+LinkedIn: linkedin.com/in/ankitsharma
+
+SUMMARY
+-------
+Full Stack Developer with 3+ years of experience building scalable web
+applications using Node.js, React, and MongoDB. Passionate about clean
+code, RESTful API design, and delivering great user experiences.
+
+SKILLS
+------
+Languages : JavaScript, TypeScript, Python, HTML, CSS
+Frontend  : React.js, Next.js, EJS, Tailwind CSS
+Backend   : Node.js, Express.js, REST APIs
+Database  : MongoDB, PostgreSQL, Redis
+Tools     : Git, Docker, AWS, VS Code, Postman
+
+EXPERIENCE
+----------
+Software Engineer — TechCorp Pvt. Ltd., Delhi
+June 2022 – Present
+- Built and maintained RESTful APIs serving 50,000+ daily active users.
+- Migrated legacy PHP backend to Node.js, reducing response time by 40%.
+- Developed resume parsing microservice using pdf-parse and mammoth.
+
+Junior Developer — Startup Hub, Remote
+Jan 2021 – May 2022
+- Created dynamic dashboards using React and Chart.js.
+- Integrated third-party APIs including payment gateways and SMS services.
+
+EDUCATION
+---------
+B.Tech in Computer Science — Delhi Technological University
+2017 – 2021 | CGPA: 8.4 / 10
+
+PROJECTS
+--------
+Resume Parser   : Node.js app that parses PDF, DOCX, TXT resumes and
+                  extracts key information using NLP.
+E-Commerce API  : Full REST API with JWT auth, product management,
+                  cart and order system.
+Chat App        : Real-time chat application built with Socket.io and React.

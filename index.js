@@ -9,7 +9,7 @@ import apiRoutes from './src/routes/api/index.route.js';
 
 const app = express();
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3001
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

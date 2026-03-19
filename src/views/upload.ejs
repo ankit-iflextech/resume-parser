@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=1280">
 <title>AI Resume Intelligence - Upload</title>
 <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<link rel="stylesheet" href="/assets/css/home.css" />
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Segoe UI', sans-serif; background: #f0f4ff; min-height: 100vh; }
@@ -88,20 +89,38 @@
           <!-- LEFT CARD -->
           <div class="card">
             
-            <div class="file-uploaded">
-              <div class="file-thumb">📋</div>
+            <div class="drop-zone" id="dropZone">
+              <input
+                type="file"
+                id="fileInput"
+                name="resume"
+                accept=".pdf,.docx,.txt"
+                hidden
+              />
 
-              <div class="file-info">
-                <h5></h5>
-                <p>Uploaded successfully · <span class="size"> KB</span></p>
+              <div class="drop-icon">📄</div>
+              <h4 id="dropText">Drop your resume here</h4>
+              <p>
+                or
+                <span
+                  class="browse-link"
+                  onclick="document.getElementById('fileInput').click()"
+                  >click to browse</span
+                >
+              </p>
+
+              <div class="file-types">
+                <span class="file-type">PDF</span>
+                <span class="file-type">DOCX</span>
+                <span class="file-type">TXT</span>
               </div>
-              <a href="/">
-                <button type="button" class="remove-btn">✕ Remove</button>
-              </a>
             </div>
 
-            <input type="hidden" name="filename" value="">
-            <input type="hidden" name="filepath" value="">
+            <!-- Selected file name shows here -->
+            <div class="file-info" id="fileInfo" style="display: none">
+              <span class="file-name" id="fileName"></span>
+              <span class="remove-file" onclick="removeFile()">✕</span>
+            </div>
 
             <div class="input-group">
               <label>Experience Level</label>
@@ -170,21 +189,74 @@
 
 
 <script>
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      const fileInfo = document.getElementById("fileInfo");
+      const fileName = document.getElementById("fileName");
+      const submitBtn = document.getElementById("submitBtn");
+      const dropText = document.getElementById("dropText");
 
-  document.getElementById('analyzeBtn').addEventListener('click', async () => {
+      // Click on drop zone opens file picker
+      dropZone.addEventListener("click", () => fileInput.click());
 
+      // File selected via input
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) showFile(fileInput.files[0]);
+      });
+
+      // Drag over
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+
+      // Drag leave
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("dragover");
+      });
+
+      // Drop file
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          fileInput.files = e.dataTransfer.files; // assign to input
+          showFile(file);
+        }
+      });
+
+      // Show selected file
+      function showFile(file) {
+        fileName.textContent = file.name;
+        fileInfo.style.display = "flex";
+        submitBtn.disabled = false;
+        dropText.textContent = "File selected ✅";
+      }
+
+      // Remove file
+      function removeFile() {
+        fileInput.value = "";
+        fileInfo.style.display = "none";
+        submitBtn.disabled = true;
+        dropText.textContent = "Drop your resume here";
+      }
+    </script>
+
+<script>
+
+  document.getElementById('analyzeBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
         // collect form data
         const form = document.getElementById('analyzeForm');
         const formData = new FormData(form);
-        const params = new URLSearchParams(formData);
-        console.log(params);
+      
         // open SSE connection via fetch
         const response = await fetch('/upload/analyze-resume', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: params
+            body: formData
         });
-
+       
         // read stream
         const reader = response.body.getReader();
         const decoder = new TextDecoder();

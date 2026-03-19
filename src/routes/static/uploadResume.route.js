@@ -5,7 +5,7 @@ import { uploadSingleFile } from "../../middlewares/uploadSingleFile.middleware.
 
 const router = express.Router();
 
-router.get('/', uploadSingleFile, (req, res) =>{
+router.get('/',(req, res) =>{
     return res.render('upload');
 })
 

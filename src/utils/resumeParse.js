@@ -11,7 +11,6 @@ const parseResume = async(filePath , fileName) => {
 
     if(ext === '.pdf'){
         const data = new Uint8Array(fs.readFileSync(filePath));
-        console.log(data)
         const pdf = await pdfjsLib.getDocument({ data }).promise;
 
         let text = "";

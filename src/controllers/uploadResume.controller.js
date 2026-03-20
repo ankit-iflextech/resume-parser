@@ -1,6 +1,7 @@
 import anylyseResumeWithLLm from "../utils/analyseResumeWithLLm.js";
 import parseResume from "../utils/resumeParse.js";
-
+import { cache } from "../../src/intances/cache.js";
+import { json } from "node:stream/consumers";
 
 export const uploadResume =  async (req, res) => {
 
@@ -35,22 +36,25 @@ export const anylsisResume = async (req, res) => {
         const file = req.file;
         const { experience_level, target_role, sector, job_description } = req.body;
 
-        // Step 1 — parse
         send({ step: 'parse', status: 'processing', message: 'Parsing resume...' });
-        console.log('parsing');
-        const parsedText = await parseResume(file); // your parse function
-        console.log('parsed')
+        const parsedText = await parseResume(file.path , file.filename); // your parse function
         send({ step: 'parse', status: 'complete', message: 'Resume parsed!' });
 
-        // Step 2 — analyze
+        const data = {
+            resumeData: parsedText,
+            target_role: target_role,
+            experience_level: experience_level,
+            sector: sector,
+            job_description: job_description
+        }
         send({ step: 'analyze', status: 'processing', message: 'Analyzing resume...' });
-        console.log('analyzing')
-        const result = await analyzeWithAI(parsedText); // your AI function
-        send({ step: 'analyze', status: 'complete', message: 'Analysis done!', data: result });
-
-        // 4. End the stream — DO NOT call res.render/res.json after this
+        const result = await anylyseResumeWithLLm(data); 
+        const resultId = crypto.randomUUID();
+        console.log(typeof result)
+        cache.set(resultId, JSON.parse(result) );
+        send({ step: 'analyze', status: 'complete', message: 'Analysis done!', data: resultId });
         send({ step: 'done', status: 'complete', message: 'All finished!' });
-        res.end(); // ← only end, never res.send/render
+        res.end(); 
 
     } catch (err) {
         send({ step: 'error', status: 'error', message: err.message });

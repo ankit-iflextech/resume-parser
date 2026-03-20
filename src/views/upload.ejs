@@ -57,6 +57,11 @@
 .card{
   flex:1;
 }
+
+.step.complete .step-circle {
+    background: green;
+    color: #fff;
+}
 </style>
 </head>
 <body>
@@ -67,13 +72,13 @@
 </nav>
 <div class="progress-bar">
   <div class="steps">
-    <div class="step active"><div class="step-circle">1</div><div class="step-label">Upload Resume</div></div>
+    <div class="step active" id="uploadResume"><div class="step-circle">1</div><div class="step-label">Upload Resume</div></div>
     <div class="step-line"></div>
-    <div class="step pending"><div class="step-circle">2</div><div class="step-label">Parsing</div></div>
+    <div class="step pending" id="parsedResume" ><div class="step-circle">2</div><div class="step-label">Parsing</div></div>
     <div class="step-line"></div>
-    <div class="step pending"><div class="step-circle">3</div><div class="step-label">Analysis</div></div>
+    <div class="step pending" id="analysisResume" ><div class="step-circle">3</div><div class="step-label">Analysis</div></div>
     <div class="step-line"></div>
-    <div class="step pending"><div class="step-circle">4</div><div class="step-label">Results</div></div>
+    <div class="step pending" id="completeResume"><div class="step-circle">4</div><div class="step-label">Results</div></div>
   </div>
 </div>
 <div class="main">
@@ -187,7 +192,7 @@
   
 </div>
 
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script>
       const dropZone = document.getElementById("dropZone");
       const fileInput = document.getElementById("fileInput");
@@ -259,6 +264,7 @@
        
         // read stream
         const reader = response.body.getReader();
+        console.log('reader : ' . reader);
         const decoder = new TextDecoder();
 
         while (true) {
@@ -278,23 +284,26 @@
         }
     });
 
-    function updateUI({ step, status, message, data }) {
+    function updateUI({ step, status, message, data}) {
 
-      console.log(`Step : ${step}`);
-      console.log(`status : ${status}`);
-      console.log(`message : ${message}`);
-      console.log(`data : ${data}`);
         if (step === 'parse') {
-            const el = document.getElementById('step-parse');
-            el.textContent = status === 'complete' ? '✅ ' + message : '🔄 ' + message;
+            $('#uploadResume').removeClass('active').addClass('complete');
+            $('#parsedResume').addClass('active');
+
+            if(status === 'complete') {
+                $('#parsedResume').addClass('complete');
+            }
         }
 
         if (step === 'analyze') {
-            const el = document.getElementById('step-analyze');
-            el.textContent = status === 'complete' ? '✅ ' + message : '🔄 ' + message;
+
+            $('#parsedResume').removeClass('active').addClass('complete');
+            $('#analysisResume').addClass('active');
 
             if (status === 'complete' && data) {
-                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+                $('#analysisResume').addClass('complete');
+                $('#completeResume').addClass('active').addClass('complete');
+                window.location.href = `/suggestion/${data}`
             }
         }
     }

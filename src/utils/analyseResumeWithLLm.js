@@ -157,14 +157,20 @@ const promptBuilder = (data) => {
 }
 
 const anylyseResumeWithLLm = async (data) => {
-    const client = new Mistral({apiKey: apiKey});
-    const prompt = promptBuilder(data);
-    const chatResponse = await client.chat.complete({
-        model: 'mistral-medium-latest',
-        messages: [{role: 'user', content: prompt}],
-    });
+    try {
+        const client = new Mistral({apiKey: apiKey});
+        const prompt = promptBuilder(data);
+        const chatResponse = await client.chat.complete({
+            model: 'mistral-medium-latest',
+            messages: [{role: 'user', content: prompt}],
+        });
 
-    return chatResponse.choices[0].message.content
+        // console.log(chatResponse.choices[0].message.content)
+        return chatResponse.choices[0].message.content
+    } catch (error) {
+        return error   
+    }
+    
 }
 
 

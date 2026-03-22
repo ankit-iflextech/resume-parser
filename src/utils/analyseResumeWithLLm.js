@@ -3,157 +3,70 @@ const apiKey = process.env.MISTRAL_API_KEY || 'your_api_key';
 
 
 const promptBuilder = (data) => {
-    return  `You are an advanced ATS (Applicant Tracking System) resume analyzer.
+    return  `Return a structured ATS evaluation report in STRICT JSON format. 
 
-            Your task is to analyze a candidate's resume and return a structured ATS evaluation report.
+### CONTEXT:
+The following text is extracted from a candidate's resume (PDF/Docx/Txt). Your goal is to act as an advanced Applicant Tracking System (ATS) and provide a cold, analytical assessment of their fit for the specified role.
 
-            ## INPUT:
-            You will receive:
+### INPUT DATA:
+- RESUME TEXT: """${data.resumeData}"""
+- TARGET ROLE: """${data.target_role || "Inferred from resume"}"""
+- JOB DESCRIPTION: """${data.job_description || "Analyze based on industry standards for the role"}"""
+- EXPERIENCE LEVEL: """${data.experience_level || "Inferred"}"""
+- SECTOR: """${data.sector || "Inferred"}"""
 
-            1. Resume Content (RAW TEXT) → REQUIRED
-            2. Target Job Role → OPTIONAL
-            3. Job Description → OPTIONAL
-            4. Years of Experience → OPTIONAL
-            5. Industry/Sector → OPTIONAL
+### CONSTRAINTS:
+1. NO MARKDOWN: Do not use bold (**) or italics (_) in the JSON values.
+2. NO PROSE: Do not include any introductory or concluding text. 
+3. FORMAT: Return ONLY the JSON object.
+4. VALIDATION: Ensure all quotes are escaped and the JSON is parsable by standard libraries.
+5. METRICS: Be strict. If achievements aren't quantified (numbers/ percentages), lower the "experience" and "ats_score".
 
-            If optional inputs are missing, infer intelligently from the resume.
+STRICT RULES:
+    - Return ONLY valid JSON, no markdown, no backticks
+    - Keep all string values concise (max 100 chars each)
+    - Do not truncate the JSON — complete all arrays and objects
+    - No trailing commas
+    - No comments inside JSON
 
-            ---
-
-            ## ANALYSIS REQUIREMENTS:
-
-            ### 1. ATS SCORE (0–100)
-            Calculate overall ATS compatibility based on:
-            - Keyword relevance
-            - Formatting
-            - Experience quality
-            - Skills match
-            - Education
-
-            Also provide:
-            - status: "Excellent" (85+), "Good" (70–84), "Needs Improvement" (<70)
-
-            ---
-
-            ### 2. CATEGORY SCORES (0–100)
-            Return scores for:
-            - Keywords
-            - Formatting
-            - Experience
-            - Education
-            - Skills Match
-
-            ---
-
-            ### 3. ACTION ITEMS (IMPORTANT)
-            Generate actionable feedback grouped by severity:
-
-            Each item must include:
-            - title
-            - description
-            - severity ("Critical", "Important", "Tip")
-
-            Examples:
-            - Missing Professional Summary
-            - Lack of quantified achievements
-            - Weak action verbs
-            - Missing LinkedIn
-            - Poor formatting
-            - Keyword gaps
-
-            Minimum 5–12 action items.
-
-            ---
-
-            ### 4. KEYWORD ANALYSIS
-
-            #### a) Keywords Present
-            Extract relevant keywords found in resume.
-
-            #### b) Missing High-Priority Keywords
-            Based on:
-            - Job description (if provided)
-            - Otherwise inferred role
-
-            Examples:
-            - Technologies
-            - Tools
-            - Concepts
-
-            #### c) Partially Mentioned Keywords
-            Keywords that appear but are weakly represented.
-
-            ---
-
-            ### 5. IMPROVEMENT SUGGESTIONS
-            Provide:
-            - Bullet-level rewrite suggestions
-            - Example improvements (quantified statements)
-
-            ---
-
-            ### 6. SUMMARY INSIGHT
-            Give a short 2–3 line summary explaining:
-            - Strength of resume
-            - Main gap
-
-            ---
-
-            ## OUTPUT FORMAT (STRICT JSON):
-
-            Return ONLY valid JSON (no explanation text):
-
-            {
-            "ats_score": {
-                "score": 70,
-                "status": "Needs Improvement"
-            },
-            "category_scores": {
-                "keywords": 58,
-                "formatting": 82,
-                "experience": 75,
-                "education": 90,
-                "skills_match": 65
-            },
-            "action_items": [
-                {
-                "title": "Missing Professional Summary",
-                "description": "Resume lacks a 3–4 line summary at the top which is critical for ATS ranking.",
-                "severity": "Critical"
-                }
-            ],
-            "keyword_analysis": {
-                "present": ["Python", "Machine Learning", "AWS"],
-                "missing": ["MLOps", "Kubernetes", "CI/CD", "TensorFlow"],
-                "partial": ["System Design", "Scalability"]
-            },
-            "improvement_suggestions": [
-                "Replace 'worked on API' with 'Developed REST APIs handling 10K+ requests/day'",
-                "Add metrics to achievements"
-            ],
-            "summary": "The resume shows strong technical skills but lacks keyword optimization and measurable achievements."
-            }
-
-            ---
-
-            ## RULES:
-            - Be strict like a real ATS
-            - Prefer measurable insights
-            - Do NOT hallucinate experience
-            - Infer role intelligently if missing
-            - Keep output clean and structured
-            
-            ---
-            input data is here 
-            Resume:
-            ${data.resumeData}
-
-            Target Role: ${data.target_role || "Not provided"}
-            Job Description: ${data.job_description || "Not provided"}
-            Experience: ${data.experience_level || "Not provided"}
-            Sector: ${data.sector || "Not provided"}
-
-        `
+### OUTPUT STRUCTURE:
+{
+  "person_details": {
+    "name": "String",
+    "email": "String",
+    "phone": "String",
+    "address": "String",
+  },
+  "target_role": "String",
+  "experience_level": "String",
+  "sector": "String",
+  "ats_score": {
+    "score": [Integer 0-100],
+    "status": ["Excellent", "Good", or "Needs Improvement"]
+  },
+  "category_scores": {
+    "keywords": [Integer],
+    "formatting": [Integer],
+    "experience": [Integer],
+    "education": [Integer],
+    "skills_match": [Integer]
+  },
+  "action_items": [
+    {
+      "title": "String",
+      "description": "String (No bolding or markdown)",
+      "severity": ["Critical", "Important", "Tip"]
+    }
+  ],
+  "keyword_analysis": {
+    "present": ["List of strings"],
+    "missing": ["List of strings"],
+    "partial": ["List of strings"]
+  },
+  "improvement_suggestions": ["List of specific bullet-point rewrites"],
+  "summary": "2-3 line objective analysis of the candidate's profile."
+}
+`
 }
 
 const anylyseResumeWithLLm = async (data) => {
@@ -162,6 +75,8 @@ const anylyseResumeWithLLm = async (data) => {
         const prompt = promptBuilder(data);
         const chatResponse = await client.chat.complete({
             model: 'mistral-medium-latest',
+            max_tokens: 4000,
+            response_format: { type: 'json_object' },
             messages: [{role: 'user', content: prompt}],
         });
 

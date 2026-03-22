@@ -22,7 +22,7 @@
           systems.
         </p>
         <div class="hero-btns">
-          <button class="btn-primary">🚀 Analyze My Resume</button>
+          <a href="/upload"> <button class="btn-primary">  🚀 Analyze My Resume</button> </a>
           <button class="btn-secondary">Watch Demo</button>
         </div>
         <div class="stats">
@@ -45,15 +45,16 @@
           <h3>Start Your Analysis</h3>
           <p>Upload your resume to get started instantly</p>
 
-          <form action="/upload" method="POST" enctype="multipart/form-data">
+          <!-- <form action="/upload" method="POST" enctype="multipart/form-data"> -->
+            <a href="/upload">
             <div class="drop-zone" id="dropZone">
-              <input
+              <!-- <input
                 type="file"
                 id="fileInput"
                 name="resume"
                 accept=".pdf,.docx,.txt"
                 hidden
-              />
+              /> -->
 
               <div class="drop-icon">📄</div>
               <h4 id="dropText">Drop your resume here</h4>
@@ -72,17 +73,18 @@
                 <span class="file-type">TXT</span>
               </div>
             </div>
+            </a>
 
             <!-- Selected file name shows here -->
             <div class="file-info" id="fileInfo" style="display: none">
               <span class="file-name" id="fileName"></span>
-              <span class="remove-file" onclick="removeFile()">✕</span>
+              <!-- <span class="remove-file" onclick="removeFile()">✕</span> -->
             </div>
 
-            <button type="submit" class="upload-btn" id="submitBtn" disabled>
+            <button type="submit" class="upload-btn" id="submitBtn">
               🔍 Analyze Resume
             </button>
-          </form>
+          <!-- </form> -->
         </div>
       </div>
     </div>
@@ -118,60 +120,5 @@
         </div>
       </div>
     </div>
-
-    <script>
-      const dropZone = document.getElementById("dropZone");
-      const fileInput = document.getElementById("fileInput");
-      const fileInfo = document.getElementById("fileInfo");
-      const fileName = document.getElementById("fileName");
-      const submitBtn = document.getElementById("submitBtn");
-      const dropText = document.getElementById("dropText");
-
-      // Click on drop zone opens file picker
-      dropZone.addEventListener("click", () => fileInput.click());
-
-      // File selected via input
-      fileInput.addEventListener("change", () => {
-        if (fileInput.files.length > 0) showFile(fileInput.files[0]);
-      });
-
-      // Drag over
-      dropZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        dropZone.classList.add("dragover");
-      });
-
-      // Drag leave
-      dropZone.addEventListener("dragleave", () => {
-        dropZone.classList.remove("dragover");
-      });
-
-      // Drop file
-      dropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        dropZone.classList.remove("dragover");
-        const file = e.dataTransfer.files[0];
-        if (file) {
-          fileInput.files = e.dataTransfer.files; // assign to input
-          showFile(file);
-        }
-      });
-
-      // Show selected file
-      function showFile(file) {
-        fileName.textContent = file.name;
-        fileInfo.style.display = "flex";
-        submitBtn.disabled = false;
-        dropText.textContent = "File selected ✅";
-      }
-
-      // Remove file
-      function removeFile() {
-        fileInput.value = "";
-        fileInfo.style.display = "none";
-        submitBtn.disabled = true;
-        dropText.textContent = "Drop your resume here";
-      }
-    </script>
   </body>
 </html>

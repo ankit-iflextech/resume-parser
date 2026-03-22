@@ -49,10 +49,24 @@ export const anylsisResume = async (req, res) => {
         }
         send({ step: 'analyze', status: 'processing', message: 'Analyzing resume...' });
         const result = await anylyseResumeWithLLm(data); 
+       
         const resultId = crypto.randomUUID();
-        console.log(typeof result)
-        cache.set(resultId, JSON.parse(result) );
-        send({ step: 'analyze', status: 'complete', message: 'Analysis done!', data: resultId });
+        // ✅ Clean the AI response before JSON.parse
+        const cleanAndParse = (str) => {
+            const cleaned = str
+                .replace(/```json/g, '')
+                .replace(/```/g, '')
+                .trim();
+
+            // extract JSON object in case of extra text
+            const match = cleaned.match(/\{[\s\S]*\}/);
+            if (!match) throw new Error('No valid JSON in response');
+
+            return JSON.parse(match[0]);
+        };
+        const parsed = cleanAndParse(result);
+        cache.set(resultId, parsed);
+        send({ step: 'analyze', status: 'complete', message: 'Analysis done!', data:resultId });
         send({ step: 'done', status: 'complete', message: 'All finished!' });
         res.end(); 
 

@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres
+    container_name: resume_parser
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: db_password
+      POSTGRES_USER: db_resume_user
+      POSTGRES_DB: resume-parser
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_url:/var/libs/postgresql/data
+volumes:
+  db_url:

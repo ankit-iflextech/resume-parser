@@ -1,3 +1,3 @@
 import NodeCache from "node-cache";
 
-export const cache = new NodeCache({ stdTTL: 2400 }); // data expires in 40 minutes
+export const cache = new NodeCache({ stdTTL: 4800 }); // data expires in 80 minutes
